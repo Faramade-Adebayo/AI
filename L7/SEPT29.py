@@ -1,7 +1,7 @@
 
 import cv2
 
-image = cv2.imread("SEPTEMBER29.jpg")
+image = cv2.imread("sept29.jpeg")
 
 cv2.namedWindow("Loaded Image", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("Loaded Image", 800,500)
