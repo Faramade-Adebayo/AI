@@ -1,0 +1,44 @@
+import requests
+import random
+import html
+
+API_BASE=""
+
+def fetch_trivia(amount,category,difficulty=None,qtype="multiple")
+  
+  params={"amount":amount,"type":qtype}
+  if category:
+    params["category"]=category
+  if difficulty:
+    ["difficulty"]=difficulty
+
+  try:
+    resp=requests.get(API_BASE,params=params,timeout=8)
+  except requests.RequestException as e:
+    print(f"Netowk error] Could not reach API")
+    return None
+  if resp.status!=200:
+    print(f"[API error] Status code:{resp.status_code}")
+  try:
+    data=resp.json()
+  except ValueError:
+    print("[Parse error] Response was not valid JSON")
+    return None
+  if data.get("response_code")!=0:
+    print(f"[API] No questions returned(response_code={data.get('response_code')})")
+    return None
+  return data.get("results",[])
+def ask_quiz(questions):
+  score=0
+  total=len(questions)
+  for i, q in enumerate(questions,start=1):
+    question_text=html.unescape(q.get("question",""))
+    correct=html.unescape(q.get("correct_answer",""))
+    incorrect=[html.unescape(x) for x in q.get('incorrect_answers',[])]
+
+    options= incorrect +[correct]
+    random.shuffle(options)
+    print(f'\nQuestion {i}/{total}:{question_text}')
+    for idx,opt in enumerate  (options,start=1) :
+      print(f"{idx}.{opt}")
+
