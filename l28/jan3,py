@@ -1,0 +1,32 @@
+import requests
+from config import November_22
+
+MODEL_ID = "nlpconnect/vit-gpt2-image-captioning"
+API_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
+
+headers={"Authorization ":f"Bearerr{November_22}"}
+
+def caption_single_image():
+    image_source="test.jpg"
+    
+    try:
+        with open(image_source,"rb") as f :
+            image_bytes=f.read()
+    except Exception as e:
+        print(f"Could not load image from {image_source}.\nError:{e}")
+        return
+    response=requests.post(API_URL,headers=headers,data=image_bytes)
+    results=response.json()
+
+    if isinstance(results,dict) and " error" in results:
+        print(f"[Error] {results['error']}")
+        return
+    
+    caption=results[0].get("generated_text","No caption found.")
+    print("image:",image_source)
+    print("Caption:",caption)
+
+    def main():
+        caption_single_image()
+    if __name__ =="__main__":
+        main()
