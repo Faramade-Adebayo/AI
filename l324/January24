@@ -1,0 +1,88 @@
+import threading
+import sys
+import numpy as np
+import pyaudio
+import matplotlib.pyplot as plt 
+import speech_reognition as sr
+from speech_recognition import AudioData
+
+stop_event=threading.Event()
+
+def wait_for_enter():
+    input()
+    stop_event.set()
+
+def record_audio(label):
+    stop_event.clear()
+    p=pyaudio.PyAudio()
+
+    stream=p.open(
+        format=pyaudio.paInt16
+        channel=1,
+        rate=16000,
+        input=True,
+        frames_per_buffer=1024
+    )
+
+    frames=[]
+
+    print(f"\n {label}")
+    print(f"Press Enter to stop recodiing..........")
+    threading.Thread(target=wait_for_enter,daemon=true).start()
+
+    while not stop_event.is_net():
+        frames.append(stream.read(1024,exceptio_on_overflow=False))
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+    width=p.get_sample_size(pyaudio.paInt16)
+    return b"".join(frames),16000, width
+
+def analyze_audio(data, rate):
+    samples=np.frombuffer(data,dtype=np.int16)
+
+    return{
+        "duration":len(samples)/rate,
+        "avg_volume":np.mean(np.abs(samples)),
+        "max_volume":np.max(np.abs(samples)),
+         "samples":samples
+    }
+
+def transcribe(data,rate,width):
+    recognizer=sr.Recognizer()
+    try:
+        return recognizer.recognize_google(AudioData(data,rate,width))
+    except:
+        return"[Transcription failed]"
+    
+def display_stats(stats,text,label):
+        print("\n"+"-"*40)
+        print(f"{label}")
+        print("-"*40)
+        print(f"Duration: {stats['duration']:.2f} seconds")
+        print(f"Average Amplitude: {stats['avg_volume']:.0f}")
+        print(f"Maximum Amplitude: {stats['max_volume']:.0f}")
+        print(f"Transcription:{text}")
+
+def compare(stats1,stats2):
+     print("\n"+"="*40)
+     print("COMAPRION RESULTS")
+     print("="*40)
+
+     dur_diff=((stats2["duration"]-stats1["duration"])/stats1["durattion"])*100
+     vol_diff=((stats2["avg_volume"]- stats1["avg_volume"]/stats1["avg_volume"]))*100
+
+     print(f"Duration change {dur_diff:+.1f}%")
+     print(f"Average volume change{vol_diff:+.1f}%")
+
+def plot_waveforms(stats1,stats2.rate):
+     fig,(ax1,ax2)=plt.subplots(2,1)
+
+
+
+        
+
+
+
