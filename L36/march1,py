@@ -1,0 +1,72 @@
+import speech_recognition as sr 
+import pyttsx3
+from googletrans import translator
+
+def speak (text, language="en"):
+    engine=pyttsx3.init()
+    engine.setPeoperty('rate', 150)
+    voice=engine.getProperty('voices')
+
+    if language=="en":
+        engine.setProperty('voices', voice[0].id)
+    else:
+        engine.setProperty('voices', voice[1].id)
+    engine.say(text)
+    engine.runAndWait()
+def speech_to_text():
+    recognizer=sr.Recognizer()
+    with sr.Microphone() as source:
+        print("? Please speak now in english.")
+        audio=recognizer.listen(source)
+    try:
+        print("??????? Recognizing speech.")
+        text=recognizer.recognize_google(audio,language="en-US")
+        print(f"You said :{text}")
+        return text
+    except sr.UnknownValueError:
+        print("Could not understand the audio")
+    except sr.RequestError as e :
+        print(f"API ERROR:{e}")
+def translate_text(text,target_language="es"):
+    translator=Trandlator()
+    translation=translator.translate(text,deest=target_language)
+    print(f"Translated Text: {translation.text}")
+    return translation.text
+
+def dispaly_language_options():
+    print(".")
+    print("1.Hindu (hi)")
+    print("2.Tamil (ta)")
+    print("3.Achinese (ace) ")
+    print("4.Acoli, (ach)")
+    print("5.Welsh (wel)")
+    print("6.Czech (cze)")
+    print("7.Igbo (ibo)")
+    print("8.Lao (lao)")
+
+    choice =input("Please select the target language")
+    language_dict={
+        "1":"hi",
+        "2":"ta",
+        "3":"ace",
+        "4":"ach",
+        "5":"wel",
+        "6":"cze",
+        "7":"ibo",
+        "8":"lao"
+    
+    }
+    return language_dict.get(choice,"es")
+def main():
+    target_language=dispaly_language_options()
+    original_text=speech_to_text()
+    if original_text:
+        translated_text=translate_text(original_text,target_language=target_language)
+        speak(translated_text, language="en")
+        print("Translation spooken out ")
+
+if __name__=="__main__" :
+    main()   
+
+
+
